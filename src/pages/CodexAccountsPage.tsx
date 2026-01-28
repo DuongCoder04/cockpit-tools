@@ -37,6 +37,7 @@ import { invoke } from '@tauri-apps/api/core';
 export function CodexAccountsPage() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language || 'zh-CN';
+
   const {
     accounts,
     currentAccount,
@@ -689,7 +690,7 @@ export function CodexAccountsPage() {
                     </div>
                     {account.quota?.hourly_reset_time && (
                       <span className="quota-reset">
-                        {formatCodexResetTime(account.quota.hourly_reset_time, locale, t)}
+                        {formatCodexResetTime(account.quota.hourly_reset_time, t)}
                       </span>
                     )}
                   </div>
@@ -711,7 +712,7 @@ export function CodexAccountsPage() {
                     </div>
                     {account.quota?.weekly_reset_time && (
                       <span className="quota-reset">
-                        {formatCodexResetTime(account.quota.weekly_reset_time, locale, t)}
+                        {formatCodexResetTime(account.quota.weekly_reset_time, t)}
                       </span>
                     )}
                   </div>
@@ -822,7 +823,7 @@ export function CodexAccountsPage() {
                         {account.quota?.hourly_reset_time && (
                           <div className="quota-footer">
                             <span className="quota-reset">
-                              {formatCodexResetTime(account.quota.hourly_reset_time, locale, t)}
+                              {formatCodexResetTime(account.quota.hourly_reset_time, t)}
                             </span>
                           </div>
                         )}
@@ -845,7 +846,7 @@ export function CodexAccountsPage() {
                         {account.quota?.weekly_reset_time && (
                           <div className="quota-footer">
                             <span className="quota-reset">
-                              {formatCodexResetTime(account.quota.weekly_reset_time, locale, t)}
+                              {formatCodexResetTime(account.quota.weekly_reset_time, t)}
                             </span>
                           </div>
                         )}
