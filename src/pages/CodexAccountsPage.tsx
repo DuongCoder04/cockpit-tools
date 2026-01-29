@@ -83,6 +83,8 @@ export function CodexAccountsPage() {
   const [message, setMessage] = useState<{ text: string; tone?: 'error' } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ ids: string[]; message: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [tagDeleteConfirm, setTagDeleteConfirm] = useState<{ tag: string; count: number } | null>(null);
+  const [deletingTag, setDeletingTag] = useState(false);
 
   const showAddModalRef = useRef(showAddModal);
   const addTabRef = useRef(addTab);
@@ -561,6 +563,41 @@ export function CodexAccountsPage() {
     setTagFilter([]);
   };
 
+  const requestDeleteTag = (tag: string) => {
+    const normalized = normalizeTag(tag);
+    if (!normalized) return;
+    const count = accounts.filter((account) =>
+      (account.tags || []).some((item) => normalizeTag(item) === normalized)
+    ).length;
+    setTagDeleteConfirm({ tag: normalized, count });
+  };
+
+  const confirmDeleteTag = async () => {
+    if (!tagDeleteConfirm || deletingTag) return;
+    setDeletingTag(true);
+    const target = tagDeleteConfirm.tag;
+    const affected = accounts.filter((account) =>
+      (account.tags || []).some((item) => normalizeTag(item) === target)
+    );
+
+    try {
+      await Promise.allSettled(
+        affected.map((account) => {
+          const nextTags = (account.tags || []).filter(
+            (item) => normalizeTag(item) !== target
+          );
+          return codexService.updateCodexAccountTags(account.id, nextTags);
+        })
+      );
+      setTagFilter((prev) => prev.filter((item) => normalizeTag(item) !== target));
+      await fetchAccounts();
+    } finally {
+      setDeletingTag(false);
+      setTagDeleteConfirm(null);
+      setShowTagFilter(false);
+    }
+  };
+
   const openTagModal = (accountId: string) => {
     setShowTagModal(accountId);
   };
@@ -886,7 +923,19 @@ export function CodexAccountsPage() {
                           checked={tagFilter.includes(tag)}
                           onChange={() => toggleTagFilterValue(tag)}
                         />
-                        <span>{tag}</span>
+                        <span className="tag-filter-name">{tag}</span>
+                        <button
+                          type="button"
+                          className="tag-filter-delete"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            requestDeleteTag(tag);
+                          }}
+                          aria-label={`删除标签 ${tag}`}
+                        >
+                          <X size={12} />
+                        </button>
                       </label>
                     ))}
                   </div>
@@ -1225,6 +1274,30 @@ export function CodexAccountsPage() {
               <button className="btn btn-danger" onClick={confirmDelete} disabled={deleting}>
                 {deleting ? <RefreshCw size={16} className="loading-spinner" /> : <Trash2 size={16} />}
                 {t('common.delete', '删除')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tagDeleteConfirm && (
+        <div className="modal-overlay" onClick={() => !deletingTag && setTagDeleteConfirm(null)}>
+          <div className="modal-content confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t('common.confirm', '确认操作')}</h2>
+            </div>
+            <div className="modal-body">
+              <p>
+                {`确认删除标签 “${tagDeleteConfirm.tag}” 吗？该标签将从 ${tagDeleteConfirm.count} 个账号中移除。`}
+              </p>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setTagDeleteConfirm(null)} disabled={deletingTag}>
+                {t('common.cancel', '取消')}
+              </button>
+              <button className="btn btn-danger" onClick={confirmDeleteTag} disabled={deletingTag}>
+                {deletingTag ? <RefreshCw size={16} className="loading-spinner" /> : <Trash2 size={16} />}
+                {deletingTag ? t('common.processing', '处理中...') : t('common.delete', '删除')}
               </button>
             </div>
           </div>
