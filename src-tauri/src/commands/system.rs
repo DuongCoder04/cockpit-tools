@@ -27,6 +27,8 @@ pub struct GeneralConfig {
     pub theme: String,
     /// 自动刷新间隔（分钟），-1 表示禁用
     pub auto_refresh_minutes: i32,
+    /// Codex 自动刷新间隔（分钟），-1 表示禁用
+    pub codex_auto_refresh_minutes: i32,
     /// 窗口关闭行为: "ask", "minimize", "quit"
     pub close_behavior: String,
 }
@@ -95,6 +97,7 @@ pub fn save_network_config(ws_enabled: bool, ws_port: u16) -> Result<bool, Strin
         language: current.language,
         theme: current.theme,
         auto_refresh_minutes: current.auto_refresh_minutes,
+        codex_auto_refresh_minutes: current.codex_auto_refresh_minutes,
         close_behavior: current.close_behavior,
     };
     
@@ -118,13 +121,20 @@ pub fn get_general_config() -> Result<GeneralConfig, String> {
         language: user_config.language,
         theme: user_config.theme,
         auto_refresh_minutes: user_config.auto_refresh_minutes,
+        codex_auto_refresh_minutes: user_config.codex_auto_refresh_minutes,
         close_behavior: close_behavior_str.to_string(),
     })
 }
 
 /// 保存通用设置配置
 #[tauri::command]
-pub fn save_general_config(language: String, theme: String, auto_refresh_minutes: i32, close_behavior: String) -> Result<(), String> {
+pub fn save_general_config(
+    language: String,
+    theme: String,
+    auto_refresh_minutes: i32,
+    codex_auto_refresh_minutes: i32,
+    close_behavior: String,
+) -> Result<(), String> {
     let current = config::get_user_config();
     // 标准化语言代码为小写，确保与插件端格式一致
     let normalized_language = language.to_lowercase();
@@ -146,6 +156,7 @@ pub fn save_general_config(language: String, theme: String, auto_refresh_minutes
         language: normalized_language.clone(),
         theme,
         auto_refresh_minutes,
+        codex_auto_refresh_minutes,
         close_behavior: close_behavior_enum,
     };
     

@@ -7,6 +7,16 @@ All notable changes to Cockpit Tools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
+## [0.4.2] - 2026-01-29
+
+### Added
+- **Update Modal**: Unified update check into a modal dialog, including the entry in Settings → About.
+- **Refresh Frequency**: Added Codex auto refresh interval settings (default 10 minutes).
+- **Account Warnings**: Show refresh warnings in the account list, including invalid-credential hints.
+
+### Changed
+- **Update UX**: Update prompt now uses a non-transparent modal consistent with existing dialogs.
+
 ## [0.4.1] - 2026-01-29
 
 ### Added

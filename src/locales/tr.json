@@ -50,7 +50,9 @@
       "themeSystem": "Sistem",
       "accountManagement": "Hesap Yönetimi",
       "autoRefresh": "Antigravity kota otomatik yenileme",
+      "codexAutoRefresh": "Codex kota otomatik yenileme",
       "autoRefreshDesc": "Arka plan güncelleme sıklığı",
+      "codexAutoRefreshDesc": "Arka plan güncelleme sıklığı",
       "autoRefreshDisabled": "Devre Dışı",
       "autoRefreshCustom": "Özel...",
       "every15min": "15 dakikada bir",
@@ -125,6 +127,8 @@
     "status": {
       "current": "Mevcut",
       "disabled": "Devre Dışı",
+      "authInvalid": "Invalid credentials",
+      "refreshFailed": "Refresh failed",
       "normal": "Normal",
       "forbidden": "403",
       "forbidden_tooltip": "API 403 Forbidden döndürdü, hesabın Gemini Code Assist'e erişimi yok",

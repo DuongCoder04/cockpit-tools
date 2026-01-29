@@ -50,7 +50,9 @@
       "themeSystem": "System",
       "accountManagement": "Kontoverwaltung",
       "autoRefresh": "Antigravity-Quote automatisch aktualisieren",
+      "codexAutoRefresh": "Codex-Quote automatisch aktualisieren",
       "autoRefreshDesc": "Hintergrundaktualisierungsfrequenz",
+      "codexAutoRefreshDesc": "Hintergrundaktualisierungsfrequenz",
       "autoRefreshDisabled": "Deaktiviert",
       "autoRefreshCustom": "Benutzerdefiniert...",
       "every15min": "Alle 15 Minuten",
@@ -125,6 +127,8 @@
     "status": {
       "current": "Aktuell",
       "disabled": "Deaktiviert",
+      "authInvalid": "Invalid credentials",
+      "refreshFailed": "Refresh failed",
       "normal": "Normal",
       "forbidden": "403",
       "forbidden_tooltip": "API gab 403 Forbidden zurück, Konto hat keinen Zugriff auf Gemini Code Assist",

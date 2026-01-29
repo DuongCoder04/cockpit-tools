@@ -21,6 +21,7 @@ import { DashboardPage } from './pages/DashboardPage';
 function App() {
   const [page, setPage] = useState<Page>('dashboard');
   const [showUpdateNotification, setShowUpdateNotification] = useState(false);
+  const [updateNotificationKey, setUpdateNotificationKey] = useState(0);
   const [showCloseDialog, setShowCloseDialog] = useState(false);
   
   // 启用自动刷新 hook
@@ -66,6 +67,17 @@ function App() {
       if (unlisten) {
         unlisten();
       }
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleUpdateRequest = () => {
+      setUpdateNotificationKey(Date.now());
+      setShowUpdateNotification(true);
+    };
+    window.addEventListener('update-check-requested', handleUpdateRequest);
+    return () => {
+      window.removeEventListener('update-check-requested', handleUpdateRequest);
     };
   }, []);
 
@@ -139,7 +151,7 @@ function App() {
     <div className="app-container">
       {/* 更新通知 */}
       {showUpdateNotification && (
-        <UpdateNotification onClose={() => setShowUpdateNotification(false)} />
+        <UpdateNotification key={updateNotificationKey} onClose={() => setShowUpdateNotification(false)} />
       )}
 
       {/* 关闭确认对话框 */}

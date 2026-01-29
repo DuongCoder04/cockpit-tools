@@ -50,7 +50,9 @@
       "themeSystem": "跟随系统",
       "accountManagement": "账号管理",
       "autoRefresh": "Antigravity 自动刷新配额",
+      "codexAutoRefresh": "Codex 自动刷新配额",
       "autoRefreshDesc": "后台自动更新频率",
+      "codexAutoRefreshDesc": "后台自动更新频率",
       "autoRefreshDisabled": "禁用",
       "autoRefreshCustom": "自定义...",
       "every15min": "每 15 分钟",
@@ -130,6 +132,8 @@
     "status": {
       "current": "当前使用",
       "disabled": "已禁用",
+      "authInvalid": "凭证无效",
+      "refreshFailed": "刷新失败",
       "normal": "正常",
       "forbidden": "403",
       "forbidden_tooltip": "API 返回 403 Forbidden，账号无权使用 Gemini Code Assist",

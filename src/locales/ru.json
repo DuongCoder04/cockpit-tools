@@ -50,7 +50,9 @@
       "themeSystem": "Системная",
       "accountManagement": "Управление аккаунтами",
       "autoRefresh": "Автообновление квоты Antigravity",
+      "codexAutoRefresh": "Автообновление квоты Codex",
       "autoRefreshDesc": "Частота фонового обновления",
+      "codexAutoRefreshDesc": "Частота фонового обновления",
       "autoRefreshDisabled": "Выключено",
       "autoRefreshCustom": "Настроить...",
       "every15min": "Каждые 15 минут",
@@ -125,6 +127,8 @@
     "status": {
       "current": "Текущий",
       "disabled": "Отключен",
+      "authInvalid": "Invalid credentials",
+      "refreshFailed": "Refresh failed",
       "normal": "Нормальный",
       "forbidden": "403",
       "forbidden_tooltip": "API вернул 403 Forbidden, аккаунт не имеет доступа к Gemini Code Assist",

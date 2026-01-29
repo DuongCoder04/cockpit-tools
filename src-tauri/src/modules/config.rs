@@ -52,6 +52,9 @@ pub struct UserConfig {
     /// 自动刷新间隔（分钟），-1 表示禁用
     #[serde(default = "default_auto_refresh")]
     pub auto_refresh_minutes: i32,
+    /// Codex 自动刷新间隔（分钟），-1 表示禁用
+    #[serde(default = "default_codex_auto_refresh")]
+    pub codex_auto_refresh_minutes: i32,
     /// 窗口关闭行为
     #[serde(default = "default_close_behavior")]
     pub close_behavior: CloseWindowBehavior,
@@ -80,6 +83,7 @@ fn default_ws_port() -> u16 { DEFAULT_WS_PORT }
 fn default_language() -> String { "zh-cn".to_string() }
 fn default_theme() -> String { "system".to_string() }
 fn default_auto_refresh() -> i32 { 10 } // 默认 10 分钟
+fn default_codex_auto_refresh() -> i32 { 10 } // 默认 10 分钟
 fn default_close_behavior() -> CloseWindowBehavior { CloseWindowBehavior::Ask }
 
 impl Default for UserConfig {
@@ -90,6 +94,7 @@ impl Default for UserConfig {
             language: default_language(),
             theme: default_theme(),
             auto_refresh_minutes: default_auto_refresh(),
+            codex_auto_refresh_minutes: default_codex_auto_refresh(),
             close_behavior: default_close_behavior(),
         }
     }

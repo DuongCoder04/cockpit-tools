@@ -50,7 +50,9 @@
       "themeSystem": "حسب النظام",
       "accountManagement": "إدارة الحسابات",
       "autoRefresh": "تحديث تلقائي لحصة Antigravity",
+      "codexAutoRefresh": "تحديث تلقائي لحصة Codex",
       "autoRefreshDesc": "تردد التحديث التلقائي في الخلفية",
+      "codexAutoRefreshDesc": "تردد التحديث التلقائي في الخلفية",
       "autoRefreshDisabled": "معطل",
       "autoRefreshCustom": "مخصص...",
       "every15min": "كل 15 دقيقة",
@@ -125,6 +127,8 @@
     "status": {
       "current": "قيد الاستخدام",
       "disabled": "معطل",
+      "authInvalid": "Invalid credentials",
+      "refreshFailed": "Refresh failed",
       "normal": "طبيعي",
       "forbidden": "403",
       "forbidden_tooltip": "أرجعت API خطأ 403 Forbidden، الحساب لا يملك صلاحية استخدام Gemini Code Assist",

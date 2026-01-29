@@ -50,7 +50,9 @@
       "themeSystem": "システム設定に従う",
       "accountManagement": "アカウント管理",
       "autoRefresh": "Antigravity 自動更新クォータ",
+      "codexAutoRefresh": "Codex 自動更新クォータ",
       "autoRefreshDesc": "バックグラウンドでの更新頻度",
+      "codexAutoRefreshDesc": "バックグラウンドでの更新頻度",
       "autoRefreshDisabled": "無効",
       "autoRefreshCustom": "カスタム...",
       "every15min": "15分ごと",
@@ -125,6 +127,8 @@
     "status": {
       "current": "使用中",
       "disabled": "無効",
+      "authInvalid": "Invalid credentials",
+      "refreshFailed": "Refresh failed",
       "normal": "通常",
       "forbidden": "403",
       "forbidden_tooltip": "APIが403 Forbiddenを返しました。アカウントはGemini Code Assistにアクセスできません",

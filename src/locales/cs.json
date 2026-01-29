@@ -50,7 +50,9 @@
       "themeSystem": "Systémový",
       "accountManagement": "Správa účtů",
       "autoRefresh": "Automatické obnovení kvóty Antigravity",
+      "codexAutoRefresh": "Automatické obnovení kvóty Codex",
       "autoRefreshDesc": "Frekvence aktualizace na pozadí",
+      "codexAutoRefreshDesc": "Frekvence aktualizace na pozadí",
       "autoRefreshDisabled": "Zakázáno",
       "autoRefreshCustom": "Vlastní...",
       "every15min": "Každých 15 minut",
@@ -125,6 +127,8 @@
     "status": {
       "current": "Aktuální",
       "disabled": "Zakázáno",
+      "authInvalid": "Invalid credentials",
+      "refreshFailed": "Refresh failed",
       "normal": "Normální",
       "forbidden": "403",
       "forbidden_tooltip": "API vrátilo 403 Forbidden, účet nemá přístup k Gemini Code Assist",

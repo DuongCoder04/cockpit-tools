@@ -50,7 +50,9 @@
       "themeSystem": "Theo hệ thống",
       "accountManagement": "Quản lý tài khoản",
       "autoRefresh": "Tự động làm mới hạn mức Antigravity",
+      "codexAutoRefresh": "Tự động làm mới hạn mức Codex",
       "autoRefreshDesc": "Tần suất cập nhật tự động dưới nền",
+      "codexAutoRefreshDesc": "Tần suất cập nhật tự động dưới nền",
       "autoRefreshDisabled": "Vô hiệu hóa",
       "autoRefreshCustom": "Tùy chỉnh...",
       "every15min": "Mỗi 15 phút",
@@ -125,6 +127,8 @@
     "status": {
       "current": "Đang sử dụng",
       "disabled": "Đã vô hiệu hóa",
+      "authInvalid": "Invalid credentials",
+      "refreshFailed": "Refresh failed",
       "normal": "Bình thường",
       "forbidden": "403",
       "forbidden_tooltip": "API trả về 403 Forbidden, tài khoản không có quyền sử dụng Gemini Code Assist",

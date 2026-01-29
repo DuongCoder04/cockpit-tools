@@ -71,6 +71,7 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
   const [switching, setSwitching] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [refreshWarnings, setRefreshWarnings] = useState<Record<string, { kind: 'auth' | 'error'; message: string }>>({});
   const [message, setMessage] = useState<{ text: string; tone?: 'error' } | null>(null);
   const [addStatus, setAddStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [addMessage, setAddMessage] = useState('');
@@ -363,14 +364,45 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
 
   const handleRefresh = async (accountId: string) => {
     setRefreshing(accountId);
-    try { await refreshQuota(accountId); } catch (e) { console.error(e); }
-    setRefreshing(null);
+    try {
+      await refreshQuota(accountId);
+      const target = accounts.find(acc => acc.id === accountId);
+      if (target) {
+        setRefreshWarnings((prev) => {
+          if (!prev[target.email]) return prev;
+          const next = { ...prev };
+          delete next[target.email];
+          return next;
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      const target = accounts.find(acc => acc.id === accountId);
+      if (target) {
+        const reason = normalizeWarningMessage(String(e));
+        setRefreshWarnings((prev) => ({
+          ...prev,
+          [target.email]: {
+            kind: isAuthFailure(reason) ? 'auth' : 'error',
+            message: reason,
+          },
+        }));
+      }
+    } finally {
+      setRefreshing(null);
+    }
   };
 
   const handleRefreshAll = async () => {
     setRefreshingAll(true);
-    try { await refreshAllQuotas(); } catch (e) { console.error(e); }
-    setRefreshingAll(false);
+    try {
+      const stats = await refreshAllQuotas();
+      setRefreshWarnings(buildWarningMapFromDetails(stats.details || []));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setRefreshingAll(false);
+    }
   };
 
   const handleDelete = (accountId: string) => {
@@ -716,6 +748,58 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
            ' ' + d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
   };
 
+  const normalizeWarningMessage = (raw: string) => raw.replace(/^Error:\s*/i, '').trim();
+
+  const isAuthFailure = (message: string) => {
+    const lower = message.toLowerCase();
+    return lower.includes('invalid_grant')
+      || lower.includes('unauthorized')
+      || lower.includes('unauthenticated')
+      || lower.includes('invalid authentication')
+      || lower.includes('401');
+  };
+
+  const parseRefreshDetail = (detail: string): { email: string; reason: string } | null => {
+    const match = detail.match(/^Account\s+(.+?):\s+(.+)$/);
+    if (!match) return null;
+    const email = match[1].trim();
+    let reason = match[2].trim();
+    reason = reason.replace(/^Fetch quota failed\s*-\s*/i, '');
+    reason = reason.replace(/^Save quota failed\s*-\s*/i, '');
+    return { email, reason };
+  };
+
+  const buildWarningMapFromDetails = (details: string[]) => {
+    const next: Record<string, { kind: 'auth' | 'error'; message: string }> = {};
+    details.forEach((detail) => {
+      const parsed = parseRefreshDetail(detail);
+      if (!parsed) return;
+      const reason = normalizeWarningMessage(parsed.reason);
+      next[parsed.email] = {
+        kind: isAuthFailure(reason) ? 'auth' : 'error',
+        message: reason,
+      };
+    });
+    return next;
+  };
+
+  useEffect(() => {
+    if (Object.keys(refreshWarnings).length === 0) return;
+    const existing = new Set(accounts.map(acc => acc.email));
+    setRefreshWarnings((prev) => {
+      let changed = false;
+      const next: Record<string, { kind: 'auth' | 'error'; message: string }> = {};
+      Object.entries(prev).forEach(([email, warning]) => {
+        if (existing.has(email)) {
+          next[email] = warning;
+        } else {
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [accounts, refreshWarnings]);
+
   // 渲染卡片视图
   const renderGridView = () => (
     <div className="accounts-grid">
@@ -726,6 +810,14 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
         const displayModels = getDisplayModels(account.quota);
         const isDisabled = account.disabled;
         const isSelected = selected.has(account.id);
+        const warning = refreshWarnings[account.email];
+        const warningLabel = warning?.kind === 'auth'
+          ? t('accounts.status.authInvalid')
+          : t('accounts.status.refreshFailed');
+        const warningTitle = warning?.message || '';
+        const disabledTitle = isDisabled
+          ? `${t('accounts.status.disabled')}${account.disabled_reason ? `: ${account.disabled_reason}` : ''}`
+          : '';
 
         // 调试日志：当没有配额数据时输出详细信息
         if (displayModels.length === 0) {
@@ -742,14 +834,26 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
         return (
           <div key={account.id} className={`account-card ${isCurrent ? 'current' : ''} ${isDisabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''}`}>
             {/* 卡片头部 */}
-            <div className="card-top">
-              <div className="card-select">
-                <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(account.id)} />
+              <div className="card-top">
+                <div className="card-select">
+                  <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(account.id)} />
+                </div>
+                <span className="account-email" title={account.email}>{account.email}</span>
+                {isCurrent && <span className="current-tag">{t('accounts.status.current')}</span>}
+                {warning && (
+                  <span className="status-pill warning" title={warningTitle}>
+                    <CircleAlert size={12} />
+                    {warningLabel}
+                  </span>
+                )}
+                {isDisabled && (
+                  <span className="status-pill disabled" title={disabledTitle}>
+                    <CircleAlert size={12} />
+                    {t('accounts.status.disabled')}
+                  </span>
+                )}
+                <span className={`tier-badge ${tier.toLowerCase()}`}>{tierLabel}</span>
               </div>
-              <span className="account-email" title={account.email}>{account.email}</span>
-              {isCurrent && <span className="current-tag">{t('accounts.status.current')}</span>}
-              <span className={`tier-badge ${tier.toLowerCase()}`}>{tierLabel}</span>
-            </div>
 
             {/* 模型配额 - 两列紧凑布局 */}
             <div className="card-quota-grid">
@@ -852,6 +956,14 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
             const tier = getSubscriptionTier(account.quota);
             const tierLabel = t(`accounts.tier.${tier.toLowerCase()}`, tier);
             const displayModels = getDisplayModels(account.quota);
+            const warning = refreshWarnings[account.email];
+            const warningLabel = warning?.kind === 'auth'
+              ? t('accounts.status.authInvalid')
+              : t('accounts.status.refreshFailed');
+            const warningTitle = warning?.message || '';
+            const disabledTitle = account.disabled
+              ? `${t('accounts.status.disabled')}${account.disabled_reason ? `: ${account.disabled_reason}` : ''}`
+              : '';
 
             return (
               <tr key={account.id} className={isCurrent ? 'current' : ''}>
@@ -870,7 +982,18 @@ export function AccountsPage({ onNavigate }: AccountsPageProps) {
                     </div>
                     <div className="account-sub-line">
                       <span className={`tier-badge ${tier.toLowerCase()}`}>{tierLabel}</span>
-                      {account.disabled && <span className="status-text disabled">{t('accounts.status.disabled')}</span>}
+                      {warning && (
+                        <span className="status-pill warning" title={warningTitle}>
+                          <CircleAlert size={12} />
+                          {warningLabel}
+                        </span>
+                      )}
+                      {account.disabled && (
+                        <span className="status-pill disabled" title={disabledTitle}>
+                          <CircleAlert size={12} />
+                          {t('accounts.status.disabled')}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </td>
